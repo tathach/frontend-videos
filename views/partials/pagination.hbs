@@ -1,0 +1,100 @@
+{{#if movies.pages}}
+  {{#if (gt movies.pages.length 1)}}
+    <nav class="mt-3">
+      <ul class="pagination viewport-pagination" data-group-size="5" data-total-pages="{{movies.pages.length}}" data-current-group="1">
+        
+        <!-- Nút Quay lại trang đầu tiên -->
+        <li class="page-item start-page">
+          <a class="page-link" href="/"><i class="bi bi-chevron-double-left"></i></a>
+        </li>
+
+        <!-- Nút Chuyển nhóm trang trước (back group) -->
+        <li class="page-item prev-group">
+          <a class="page-link" href="javascript:void(0)"><i class="bi bi-chevron-left"></i></a>
+        </li>
+
+        <!-- Các trang trong nhóm -->
+        {{#each movies.pages}}
+          <li class="page-item page-group-{{this.number}} {{#if this.active}}active{{/if}}">
+            <a class="page-link" href="{{#if (eq this.number 1)}}/{{else}}?page={{this.number}}{{/if}}">
+              {{this.number}}
+            </a>
+          </li>
+        {{/each}}
+
+        <!-- Nút Chuyển nhóm trang sau (next group) -->
+        <li class="page-item next-group">
+          <a class="page-link" href="javascript:void(0)"><i class="bi bi-chevron-right"></i></a>
+        </li>
+
+        <!-- Nút Quay lại trang cuối cùng -->
+        <li class="page-item end-page">
+          <a class="page-link" href="?page={{movies.pages.length}}"><i class="bi bi-chevron-double-right"></i></a>
+        </li>
+      </ul>
+    </nav>
+  {{/if}}
+{{/if}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const pagination = document.querySelector('.viewport-pagination');
+  const groupSize = parseInt(pagination.dataset.groupSize, 10);
+  const totalPages = parseInt(pagination.dataset.totalPages, 10);
+  let currentGroup = Math.floor((getActivePage() - 1) / groupSize);
+
+  const pageItems = pagination.querySelectorAll('.page-item[class*="page-group-"]');
+  const prevGroupBtn = pagination.querySelector('.prev-group');
+  const nextGroupBtn = pagination.querySelector('.next-group');
+
+  // Gắn sự kiện
+  prevGroupBtn.addEventListener('click', () => {
+    if (currentGroup > 0) {
+      currentGroup--;
+      renderGroup(currentGroup);
+    }
+  });
+
+  nextGroupBtn.addEventListener('click', () => {
+    const maxGroup = Math.floor((totalPages - 1) / groupSize);
+    if (currentGroup < maxGroup) {
+      currentGroup++;
+      renderGroup(currentGroup);
+    }
+  });
+
+  // Hàm render nhóm trang dựa trên groupIndex
+  function renderGroup(groupIndex) {
+    const start = groupIndex * groupSize + 1;
+    const end = Math.min(start + groupSize - 1, totalPages);
+
+    pageItems.forEach(item => {
+      const page = getPageNumberFromClass(item);
+      if (page >= start && page <= end) {
+        item.style.display = 'inline-block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Vô hiệu hóa nút nếu ở đầu/cuối
+    prevGroupBtn.classList.toggle('disabled', groupIndex === 0);
+    nextGroupBtn.classList.toggle('disabled', end === totalPages);
+
+    pagination.dataset.currentGroup = groupIndex + 1;
+  }
+
+  function getPageNumberFromClass(item) {
+    const match = item.className.match(/page-group-(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
+  }
+
+  function getActivePage() {
+    const active = pagination.querySelector('.page-item.active');
+    return active ? getPageNumberFromClass(active) : 1;
+  }
+
+  // Khởi tạo ban đầu
+  renderGroup(currentGroup);
+});
+</script>
+

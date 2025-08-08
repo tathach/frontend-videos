@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="/assets/"
+  data-template="vertical-menu-template-free">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {{#if settings.enableIndex}}
+  <!-- ✅ Cho phép bot index trang -->
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+  {{else}}
+  <!-- 🔒 Ngăn bot index trang (dùng cho môi trường dev, test...) -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  {{/if}}
+  <meta property="og:locale" content="vi_VN">
+  <meta name="google" content="notranslate" />
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="KUXX">
+  <title>{{title}}</title>
+  
+  <!-- SEO Description (optional, không index nên không quan trọng nhưng có thể giữ để dev/test) -->
+  {{#if settings.enableIndex}}
+  <meta name="description" content="{{#if metaDescription}}{{metaDescription}}{{else}}{{settings.metaDescription}}{{/if}}" />
+  {{else}}
+  <meta name="description" content="Trang đang được phát triển nội bộ, vui lòng quay lại sau." />
+  {{/if}}
+
+  <link rel="canonical" href="{{canonicalUrl}}" />
+  <link rel="shortcut icon" href="/assets/img/favicon/favicon-kuxx.ico" type="image/x-icon">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{canonicalUrl}}" />
+  <meta property="og:title" content="{{title}}" />
+  <meta property="og:description" content="{{#if metaDescription}}{{metaDescription}}{{else}}{{settings.metaDescription}}{{/if}}" />
+  <meta property="og:image" content="{{settings.ogImage}}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{title}}" />
+  <meta name="twitter:description" content="{{#if metaDescription}}{{metaDescription}}{{else}}{{settings.metaDescription}}{{/if}}" />
+  <meta name="twitter:image" content="{{settings.ogImage}}" />
+
+  <!-- Meta từ settings -->
+  {{{settings.metaTags}}}
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon-kuxx.ico" />
+  {{#if settings.logo}}
+  <link rel="preload" as="image" href="{{settings.logo}}" />
+  {{/if}}
+  {{#if settings.backgroundImage}}
+  <link rel="preload" as="image" href="{{settings.backgroundImage}}" />
+  {{/if}}
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Icon Fonts -->
+
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="/assets/vendor/css/bootstrap-icons.css" />
+
+  <!-- Vendor CSS -->
+  <link rel="stylesheet" href="/assets/css/custom.css" />
+  {{{settings.cssLinks}}}
+
+  {{#if structuredData}}
+  <script type="application/ld+json">
+    {{{json structuredData}}}
+  </script>
+  {{/if}}
+</head>
+
+
+<body>
+  <!-- Layout wrapper -->
+  <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container"
+      style="background-color: {{settings.backgroundColor}};{{#if settings.backgroundImage}} background-image: url('{{settings.backgroundImage}}');{{/if}}">
+      <!-- Menu placeholder removed -->
+
+      <!-- Layout container -->
+      <div class="container-md main-container p-0" style="background-color: {{settings.containerColor}};">
+        {{> header}}
+
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+          <!-- Content -->
+          <div id="ads-header-tracking"></div>
+          <!-- Content -->
+
+          {{{body}}}
+          <!-- / Content -->
+
+          <!-- Footer -->
+          {{> footer}}
+          <!-- / Footer -->
+          <div id="ads-footer-tracking"></div>
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!-- Content wrapper -->
+      </div>
+      <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+  </div>
+  <!-- / Layout wrapper -->
+  <!-- Main JS -->
+  <script src="/assets/js/ddts.js"></script>
+  <script src="/assets/js/main.js"></script>
+  {{#if settings.enableEmbedAd}}
+  <script src="https://api.tathach.com/assets/js/embed-ad.js"></script>
+  {{/if}}
+  {{{settings.scripts}}}
+</body>
+
+</html>

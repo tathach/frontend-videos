@@ -1,0 +1,236 @@
+<!-- HTML -->
+{{!--
+<link href="/assets/vendor/libs/videojs/video-js.css" rel="stylesheet" /> --}}
+{{!--
+<script src="/assets/vendor/libs/videojs/video.min.js"></script> --}}
+<script src="/assets/vendor/js/hls.js"></script>
+
+<div class="container my-4">
+  <h1 class="h3 mb-3 text-white">{{video.title}}</h1>
+
+  <!-- Video.js Player -->
+  <div class="position-relative">
+    <video id="player" class="video-js vjs-default-skin vjs-fluid" controls preload="auto" poster="{{video.thumbnail}}"
+      data-setup='{}'>
+      <source src="{{#if intro}}{{intro.video_url}}{{else}}{{video.video_urls.r2}}{{/if}}"
+        type="application/x-mpegURL" />
+    </video>
+    <button id="skipIntroBtn" class="btn btn-sm" style="display:none;">Bỏ qua intro</button>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center my-2">
+    <div class="btn-group" role="group">
+      {{#if video.video_urls.r2}}
+      <button type="button" class="btn btn-danger btn-sm server-btn active" data-src="{{video.video_urls.r2}}"
+        data-type="r2">Server 1</button>
+      {{/if}}
+      {{#if video.video_urls.minio}}
+      <button type="button" class="btn btn-danger btn-sm server-btn" data-src="{{video.video_urls.minio}}"
+        data-type="minio">Server 2</button>
+      {{/if}}
+    </div>
+    <div class="text-light"><i class="bi bi-eye"></i> {{video.views}}</div>
+  </div>
+  <div id="ads-body-tracking"></div>
+
+  <div class="video-content mb-3" id="videoContentWrapper">
+    {{#each video.content}}
+    <p class="content-line">{{this}}</p>
+    {{/each}}
+    <span id="toggleContentText" class="toggle-text d-none">Xem thêm</span>
+  </div>
+
+
+  <div class="tag-container mb-3">
+    {{#each tags}}
+    <a class="tag-btn  {{#if @first}}active{{/if}}" href="/tag/{{this.slug}}">{{this.name}}</a>
+    {{/each}}
+  </div>
+
+  <div class="tag-container mb-3">
+    {{#each categories}}
+    <a class="tag-btn" href="/category/{{this.slug}}">
+      <i class="bi bi-tag-fill me-1"></i> {{this.name}}
+    </a>
+    {{/each}}
+  </div>
+
+  <div class="section-videos">
+    <h5 class="tag-title">Video liên quan</h5>
+    <div class="row gx-2 pb-3" id="relatedVideos">
+      {{#each related}}
+        {{#ifCond @index '<' 10}}
+          {{> videoCard}}
+        {{else}}
+          {{> videoCard extraClass="d-none extra-related"}}
+        {{/ifCond}}
+      {{/each}}
+    </div>
+    {{#ifCond related.length '>' 10}}
+    <div class="text-center pb-2">
+      <button id="loadMoreRelated" class="btn btn-outline-light btn-sm">Xem thêm</button>
+    </div>
+    {{/ifCond}}
+  </div>
+
+  {{> tagSection}}
+</div>
+
+<script>
+  (function () {
+    const sources = {
+      r2: '{{video.video_urls.r2}}',
+      minio: '{{video.video_urls.minio}}'
+    };
+
+    const introUrl = '{{intro.video_url}}';
+    const hasIntro = Boolean(introUrl);
+    let current = hasIntro ? introUrl : (sources.r2 || sources.minio);
+    const video = document.getElementById('player');
+    const skipBtn = document.getElementById('skipIntroBtn');
+    let hls;
+    let viewLogged = false;
+    let isIntro = hasIntro;
+    let skipTimeout;
+    let triedSources = new Set();
+
+    function preventSeek() {
+      if (isIntro && video.currentTime > 0.1) {
+        video.currentTime = 0;
+      }
+    }
+
+    function enableSeek() {
+      video.removeEventListener('seeking', preventSeek);
+      video.removeEventListener('seeked', preventSeek);
+    }
+
+    function disableSeek() {
+      video.addEventListener('seeking', preventSeek);
+      video.addEventListener('seeked', preventSeek);
+    }
+
+    function loadVideo(src, isIntroVideo = false) {
+      if (hls) hls.destroy();
+
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(video);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = src;
+      }
+
+      current = src;
+      isIntro = isIntroVideo;
+      triedSources.add(src);
+    }
+
+    function loadMainVideo() {
+      clearTimeout(skipTimeout);
+      skipBtn.style.display = 'none';
+      loadVideo(sources.r2 || sources.minio, false);
+      enableSeek();
+    }
+
+    skipBtn.addEventListener('click', () => {
+      loadMainVideo();
+    });
+
+    video.addEventListener('timeupdate', () => {
+      if (isIntro && video.currentTime >= 5 && skipBtn.style.display === 'none') {
+        skipBtn.style.display = 'block';
+      }
+
+      if (!viewLogged && video.currentTime >= 20 && !isIntro) {
+        viewLogged = true;
+        fetch('/api/v1/video/view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slug: '{{video.slug}}',
+            videoId: '{{video._id}}',
+            source: current === sources.r2 ? 'r2' : 'minio'
+          })
+        });
+      }
+    });
+
+    video.addEventListener('ended', () => {
+      if (isIntro) {
+        loadMainVideo();
+      }
+    });
+
+    // Xử lý chuyển server thủ công
+    document.querySelectorAll('.server-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const src = this.getAttribute('data-src');
+        loadVideo(src, false);
+        enableSeek();
+        isIntro = false;
+        document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Auto fallback nếu lỗi phát
+    video.addEventListener('error', function () {
+      const fallback = (current === sources.r2 && sources.minio) ? sources.minio
+        : (current === sources.minio && sources.r2) ? sources.r2
+          : null;
+
+      if (fallback && !triedSources.has(fallback)) {
+        loadVideo(fallback, false);
+        enableSeek();
+        isIntro = false;
+
+        // Highlight nút tương ứng
+        document.querySelectorAll('.server-btn').forEach(b => {
+          if (b.getAttribute('data-src') === fallback) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+    });
+
+    // Bắt đầu load
+    loadVideo(current, isIntro);
+    if (isIntro) disableSeek();
+  })();
+
+
+  (function () {
+    const wrapper = document.querySelector('.video-content');
+    const toggleText = document.getElementById('toggleContentText');
+
+    function checkNeedToggle() {
+      if (window.innerWidth <= 576) {
+        const pList = wrapper.querySelectorAll('.content-line');
+        for (let p of pList) {
+          if (p.scrollHeight > p.clientHeight + 2) {
+            toggleText.classList.remove('d-none');
+            return;
+          }
+        }
+      }
+      toggleText.classList.add('d-none');
+    }
+
+    toggleText.addEventListener('click', () => {
+      wrapper.classList.toggle('expanded');
+      toggleText.innerText = wrapper.classList.contains('expanded') ? 'Thu gọn' : 'Xem thêm';
+    });
+
+    window.addEventListener('resize', checkNeedToggle);
+    window.addEventListener('load', checkNeedToggle);
+  })();
+
+  (function () {
+    const btn = document.getElementById('loadMoreRelated');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.extra-related').forEach(el => el.classList.remove('d-none'));
+      btn.remove();
+    });
+  })();
+</script>

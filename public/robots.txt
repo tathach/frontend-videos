@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /auth/login
+Allow: /
+
+Sitemap: https://kuxx.club/sitemap.xml

@@ -1,0 +1,19 @@
+<div class="container my-4">
+  <div class="title-wrapper">
+    <h3 class="title-content">PHIM SEX HAY</h3>
+    <div class="title-underline"></div>
+  </div>
+  <div class="row gx-2">
+    {{#if movies.videos.length}}
+      {{#each movies.videos}}
+      {{> videoCard}}
+      {{/each}}
+    {{else}}
+      <div class="text-center py-5 w-100">Không có video</div>
+    {{/if}}
+  </div>
+  {{> pagination}}
+
+  {{> tagSection}}
+
+</div>

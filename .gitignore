@@ -1,0 +1,57 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+*.out
+*.pid
+
+# PM2 logs & dump
+.pids/
+*.pid
+*.seed
+*.log
+dump.pm2
+dump.rdb
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv
+.env
+.env.*.local
+
+# VSCode settings
+.vscode/
+.history/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# build output (if any)
+dist/
+build/
+
+# Others (if used)
+coverage/
+.cache/
+*.tgz
+
+# Sitemap cache
+app/workers/sitemap-counts.json
+
+# Optional: ignore entire local config
+config/local.js
+app/uploads/temp/*
+app/uploads/temp/*.mp4
+app/uploads/temp/*.mp4
+backup/
+

@@ -1,0 +1,8 @@
+<div class="tag-section p-3">
+  <h3 class="tag-title">Thẻ Nhiều Lượt Xem</h3>
+  <div class="tag-container mt-2">
+    {{#each trendingTags}}
+    <a class="tag-btn {{#if @first}}active{{/if}}" href="/tag/{{this.slug}}">{{this.name}}</a>
+    {{/each}}
+  </div>
+</div>

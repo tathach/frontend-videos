@@ -1,0 +1,71 @@
+<div class="container mt-4">
+  <h1 class="mb-4">Quản lý cấu hình trang</h1>
+  <form action="/settings" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Tiêu đề trang chủ</label>
+      <input type="text" class="form-control" name="homeTitle" value="{{settings.homeTitle}}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Meta tags</label>
+      <textarea class="form-control" name="metaTags" rows="3">{{settings.metaTags}}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Meta Description</label>
+      <textarea class="form-control" name="metaDescription" rows="2">{{settings.metaDescription}}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Base URL</label>
+      <input type="text" class="form-control" name="baseUrl" value="{{settings.baseUrl}}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">OG Image</label>
+      <input type="file" class="form-control" name="ogImage">
+        {{#if settings.ogImage}}
+          <img loading="lazy" src="{{settings.ogImage}}" alt="OG Image" style="height:100px" class="mt-2" />
+        {{/if}}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">CSS Links</label>
+      <textarea class="form-control" name="cssLinks" rows="3">{{settings.cssLinks}}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Scripts</label>
+      <textarea class="form-control" name="scripts" rows="3">{{settings.scripts}}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Logo</label>
+      <input type="file" class="form-control" name="logo">
+        {{#if settings.logo}}
+          <img loading="lazy" src="{{settings.logo}}" alt="Logo" style="height:40px" class="mt-2" />
+        {{/if}}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Background Image</label>
+      <input type="file" class="form-control" name="backgroundImage">
+        {{#if settings.backgroundImage}}
+          <img loading="lazy" src="{{settings.backgroundImage}}" alt="Background" style="height:100px" class="mt-2" />
+        {{/if}}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Background Color</label>
+      <input type="color" class="form-control form-control-color" name="backgroundColor" value="{{settings.backgroundColor}}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Container Color</label>
+      <input type="color" class="form-control form-control-color" name="containerColor" value="{{settings.containerColor}}">
+    </div>
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" role="switch" id="enableEmbedAd" name="enableEmbedAd" {{#if settings.enableEmbedAd}}checked{{/if}}>
+      <label class="form-check-label" for="enableEmbedAd">Enable Embed Ads</label>
+    </div>
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" role="switch" id="enableIndex" name="enableIndex" {{#if settings.enableIndex}}checked{{/if}}>
+      <label class="form-check-label" for="enableIndex">Allow Search Engine Indexing</label>
+    </div>
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" role="switch" id="enableIntroVideo" name="enableIntroVideo" {{#if settings.enableIntroVideo}}checked{{/if}}>
+      <label class="form-check-label" for="enableIntroVideo">Enable Intro Video</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+  </form>
+</div>

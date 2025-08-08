@@ -1,0 +1,22 @@
+<div class="col-custom-5 {{extraClass}}">
+  <a href="/video/{{this.slug}}" class="text-decoration-none text-white">
+    <div class="video-card">
+      <div class="video-thumb">
+        {{#if this.thumbnail}}
+        <img class="image-thumb" loading="lazy" src="{{this.thumbnail}}" height="120" alt="{{this.title}}">
+        {{else}}
+        <img class="image-thumb" loading="lazy" src="{{this.thumbnail_s3}}" height="120" alt="{{this.title}}">
+        {{/if}}
+        <!-- Thêm phần thời gian và lượt xem ở góc dưới trái và phải -->
+        {{!-- <span class="badge badge-custom time-badge">{{this.duration}}P</span> --}}
+        {{#if this.country.short_name}}
+        <span class="text-light country-badge">{{this.country.short_name}}</span>
+        {{/if}}
+        <span class="text-light view-badge"><i class="bi bi-eye"></i> {{this.views}}</span>
+      </div>
+      <div class="p-1 pt-0">
+        <p class="mt-1 mb-0 video-title-clamp">{{this.title}}</p>
+      </div>
+    </div>
+  </a>
+</div>

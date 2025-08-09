@@ -3,10 +3,10 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
-const backupPath = path.join(__dirname, '..', 'backup.js');
-if (!fs.existsSync(backupPath)) {
-  throw new Error('Required file backup.js is missing. System cannot start.');
-}
+// const backupPath = path.join(__dirname, '..', 'backup.js');
+// if (!fs.existsSync(backupPath)) {
+//   throw new Error('Required file backup.js is missing. System cannot start.');
+// }
 
 const MONGO_URL = process.env.MONGO_URL;
 

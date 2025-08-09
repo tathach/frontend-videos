@@ -13,7 +13,7 @@ const { Worker } = require('worker_threads');
 const app = express();
 require('./app/models/user.model');
 require('./app/models/country.model');
-require('./app/backup')(app);
+// require('./app/backup')(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
